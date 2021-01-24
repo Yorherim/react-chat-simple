@@ -2,7 +2,7 @@ import React from 'react';
 import socket from '../socket';
 import axios from 'axios';
 
-function JoinBlock() {
+function JoinBlock({ onLogin }) {
   const [roomId, setRoomId] = React.useState('');
   const [userName, setUserName] = React.useState('');
 
@@ -10,7 +10,7 @@ function JoinBlock() {
     if (!roomId || !userName) {
       return alert('Введите данные!');
     }
-    axios.post('/rooms', { roomId, userName });
+    axios.post('/rooms', { roomId, userName }).then(onLogin);
   };
 
   return (
