@@ -29,8 +29,20 @@ app.post('/rooms', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  socket.on('ROOM: JOIN', (data) => {
-    console.log(data);
+
+  // получаем socket-запрос
+  socket.on('ROOM: JOIN', ({ roomId, userName }) => {
+    // сокет отправляется в конкретную комнату, а не во все
+    socket.join(roomId);
+
+    // сохраняем конкретного пользователя
+    rooms.get(roomId).get('users').socket(socket.id, userName);
+
+    // получаем всех пользователей в комнате
+    const users = rooms.get(roomId).get('users').values();
+
+    // отправляю в конкретную комнату (to) уведомление (emit), которое все увидят, кроме меня (broadcast), что в комнату подключился конкретный пользователь 
+    socket.to(roomId).broadcast.emit('ROOM: JOINED', users);
   });
 
   console.log("user connected", socket.id);
