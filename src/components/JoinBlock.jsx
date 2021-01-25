@@ -5,12 +5,17 @@ import axios from 'axios';
 function JoinBlock({ onLogin }) {
   const [roomId, setRoomId] = React.useState('');
   const [userName, setUserName] = React.useState('');
+  const [isLoading, setIsLoading] = React.useState(false);
 
-  const onEnter = () => {
+  const onEnter = async () => {
     if (!roomId || !userName) {
       return alert('Введите данные!');
     }
-    axios.post('/rooms', { roomId, userName }).then(onLogin);
+
+    const obj = { roomId, userName };
+    setIsLoading(true);
+    await axios.post('/rooms', obj);
+    onLogin(obj);
   };
 
   return (
@@ -27,8 +32,8 @@ function JoinBlock({ onLogin }) {
         value={userName}
         onChange={(e) => setUserName(e.target.value)}
       />
-      <button className="btn btn-success" onClick={onEnter}>
-        ВОЙТИ
+      <button disabled={isLoading} className="btn btn-success" onClick={onEnter}>
+        {isLoading ? 'Вход...' : 'Войти'}
       </button>
     </div>
   );

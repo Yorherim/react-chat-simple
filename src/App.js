@@ -1,25 +1,29 @@
 import React from 'react';
+import socket from './socket';
 
 import reducer from './reducer';
 import JoinBlock from './components/JoinBlock';
 
 function App() {
   const [state, dispatch] = React.useReducer(reducer, {
-    isAuth: false
+    joined: false,
+    roomId: null,
+    userName: null
   });
 
-  const onLogin = () => {
+  const onLogin = (obj) => {
     dispatch({
-      type: 'IS_AUTH',
-      payload: true
-    })
-  }
+      type: 'JOINED',
+      payload: obj
+    });
 
-  console.log(state);
+    // отправляем socket-запрос на backend
+    socket.emit("ROOM: JOIN", obj);
+  }
 
   return (
     <div className="wrapper">
-      {!state.isAuth && <JoinBlock onLogin={onLogin} />}
+      {!state.joined && <JoinBlock onLogin={onLogin} />}
     </div>
   );
 }

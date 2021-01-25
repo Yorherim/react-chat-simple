@@ -1,12 +1,16 @@
-export default (state, action) => {
+const reducer = (state, action) => {
   switch (action.type) {
-    case 'IS_AUTH':
+    case 'JOINED':
       return {
         ...state,
-        isAuth: action.payload
+        joined: true,
+        roomId: action.payload.roomId,
+        userName: action.payload.userName,
       }
 
     default:
       return state;
   }
 }
+
+export default reducer;
