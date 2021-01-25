@@ -3,6 +3,7 @@ import socket from './socket';
 
 import reducer from './reducer';
 import JoinBlock from './components/JoinBlock';
+import Chat from './components/Chat';
 
 function App() {
   const [state, dispatch] = React.useReducer(reducer, {
@@ -21,9 +22,15 @@ function App() {
     socket.emit("ROOM: JOIN", obj);
   }
 
+  React.useEffect(() => {
+    socket.on('ROOM: JOINED', (users) => {
+      console.log('новый пользователь', users);
+    });
+  }, []);
+
   return (
     <div className="wrapper">
-      {!state.joined && <JoinBlock onLogin={onLogin} />}
+      {!state.joined ? <JoinBlock onLogin={onLogin} /> : <Chat />}
     </div>
   );
 }
