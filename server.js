@@ -13,7 +13,15 @@ app.use(express.json());
 
 const rooms = new Map();
 
-app.get('/rooms', (req, res) => res.json(rooms));
+app.get('/rooms/:id', (req, res) => {
+  const roomId = req.params.id;
+  const obj = rooms.has(roomId)
+    ? {
+      users: [...rooms.get(roomId).get('users').values()],
+      messages: [...rooms.get(roomId).get('messages').values()]
+    } : { users: [], messages: [] };
+  res.json(obj);
+});
 
 app.post('/rooms', (req, res) => {
   const { roomId, userName } = req.body;
@@ -42,7 +50,18 @@ io.on('connection', (socket) => {
     const users = [...rooms.get(roomId).get('users').values()];
 
     // отправляю в конкретную комнату (to) уведомление (emit), которое все увидят, кроме меня (broadcast), что в комнату подключился конкретный пользователь 
-    socket.to(roomId).broadcast.emit('ROOM: JOINED', users);
+    socket.to(roomId).broadcast.emit('ROOM: SET_USERS', users);
+  });
+
+  // удаляем пользователя при дисконекте
+  socket.on('disconnect', () => {
+    rooms.forEach((value, roomId) => {
+      console.log(value.get('users'));
+      if (value.get('users').delete(socket.id)) {
+        const users = [...value.get('users').values()];
+        socket.to(roomId).broadcast.emit('ROOM: SET_USERS', users);
+      }
+    });
   });
 
   console.log("user connected", socket.id);

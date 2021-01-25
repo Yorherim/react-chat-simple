@@ -1,15 +1,17 @@
 import React from 'react';
 import socket from '../socket';
 
-function Chat() {
+function Chat({ users, messages }) {
   const [messageValue, setMessageValue] = React.useState('');
 
   return (
     <div className="chat">
       <div className="chat-users">
-        <b>Users (1):</b>
+        <b>Онлайн ({users.length}):</b>
         <ul>
-          <li>test user</li>
+          {users.map((name, index) => (
+            <li key={name + index}>{name}</li>
+          ))}
         </ul>
       </div>
       <div className="chat-messages">

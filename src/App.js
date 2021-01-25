@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 import socket from './socket';
 
 import reducer from './reducer';
@@ -9,10 +10,19 @@ function App() {
   const [state, dispatch] = React.useReducer(reducer, {
     joined: false,
     roomId: null,
-    userName: null
+    userName: null,
+    users: [],
+    messages: []
   });
 
-  const onLogin = (obj) => {
+  const setUsers = (users) => {
+    dispatch({
+      type: 'SET_USERS',
+      payload: users
+    });
+  }
+
+  const onLogin = async (obj) => {
     dispatch({
       type: 'JOINED',
       payload: obj
@@ -20,17 +30,18 @@ function App() {
 
     // отправляем socket-запрос на backend
     socket.emit("ROOM: JOIN", obj);
+
+    const { data } = await axios.get(`/rooms/${obj.roomId}`);
+    setUsers(data.users);
   }
 
   React.useEffect(() => {
-    socket.on('ROOM: JOINED', (users) => {
-      console.log('новый пользователь', users);
-    });
+    socket.on('ROOM: SET_USERS', setUsers);
   }, []);
 
   return (
     <div className="wrapper">
-      {!state.joined ? <JoinBlock onLogin={onLogin} /> : <Chat />}
+      {!state.joined ? <JoinBlock onLogin={onLogin} /> : <Chat {...state} />}
     </div>
   );
 }
