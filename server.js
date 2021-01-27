@@ -20,6 +20,7 @@ app.get('/rooms/:id', (req, res) => {
       users: [...rooms.get(roomId).get('users').values()],
       messages: [...rooms.get(roomId).get('messages').values()]
     } : { users: [], messages: [] };
+
   res.json(obj);
 });
 
@@ -51,6 +52,12 @@ io.on('connection', (socket) => {
 
     // отправляю в конкретную комнату (to) уведомление (emit), которое все увидят, кроме меня (broadcast), что в комнату подключился конкретный пользователь 
     socket.to(roomId).broadcast.emit('ROOM: SET_USERS', users);
+  });
+
+  socket.on('ROOM: NEW_MESSAGE', ({ roomId, userName, text }) => {
+    const obj = { userName, text };
+    rooms.get(roomId).get('messages').push(obj);
+    socket.to(roomId).broadcast.emit('ROOM: NEW_MESSAGE', obj);
   });
 
   // удаляем пользователя при дисконекте
