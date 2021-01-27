@@ -63,7 +63,6 @@ io.on('connection', (socket) => {
   // удаляем пользователя при дисконекте
   socket.on('disconnect', () => {
     rooms.forEach((value, roomId) => {
-      console.log(value.get('users'));
       if (value.get('users').delete(socket.id)) {
         const users = [...value.get('users').values()];
         socket.to(roomId).broadcast.emit('ROOM: SET_USERS', users);

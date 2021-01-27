@@ -15,6 +15,10 @@ function Chat({ users, messages, userName, roomId, onAddMessage }) {
     setMessageValue('');
   };
 
+  React.useEffect(() => {
+    messagesRef.current.scrollTo(0, 99999);
+  }, [messages]);
+
   return (
     <div className="chat">
       <div className="chat-users">
@@ -29,8 +33,8 @@ function Chat({ users, messages, userName, roomId, onAddMessage }) {
       </div>
       <div className="chat-messages">
         <div ref={messagesRef} className="messages">
-          {messages.map((message) => (
-            <div className="message">
+          {messages.map((message, i) => (
+            <div key={message + i} className="message">
               <p>{message.text}</p>
               <div>
                 <span>{message.userName}</span>
