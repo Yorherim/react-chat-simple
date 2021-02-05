@@ -8,6 +8,10 @@ const io = require('socket.io')(server, {
   }
 });
 
+const PORT = process.env.PORT || 9999;
+
+app.use(express.static(path.join(__dirname, '../client/public')));
+
 // указываем, что приложение может получать json данные (для req в add.post)
 app.use(express.json());
 
@@ -73,7 +77,7 @@ io.on('connection', (socket) => {
   console.log("user connected", socket.id);
 });
 
-server.listen(9999, (err) => {
+server.listen(PORT, (err) => {
   if (err) throw Error(err);
   console.log('Сервер запущен!');
 });
