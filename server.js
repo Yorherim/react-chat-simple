@@ -10,7 +10,7 @@ const io = require('socket.io')(server, {
 
 const PORT = process.env.PORT || 9999;
 
-app.use(express.static(path.join(__dirname, '../client/public')));
+app.use(express.static(path.join(__dirname, 'client/public')));
 
 // указываем, что приложение может получать json данные (для req в add.post)
 app.use(express.json());
